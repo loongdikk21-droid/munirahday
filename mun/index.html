@@ -259,9 +259,10 @@
 </head>
 <body>
 
-  <!-- AUDIO MUSIK HAPPY BIRTHDAY -->
+  <!-- AUDIO MUSIK HAPPY BIRTHDAY (LINK BARU SUPAYA TIDAK EROR) -->
   <audio id="bgMusic" loop crossorigin="anonymous" preload="auto">
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c82d4317.mp3?filename=happy-birthday-15243.mp3" type="audio/mpeg">
+    <source src="https://actions.google.com/sounds/v1/holidays/happy_birthday_song.ogg" type="audio/ogg">
+    <source src="https://raw.githubusercontent.com/rafaelreis-hotmart/Audio-Samples/main/happy-birthday.mp3" type="audio/mpeg">
   </audio>
 
   <button class="music-btn" onclick="toggleMusic()">🎵 Putar Musik</button>
@@ -361,7 +362,7 @@
   </div>
 
   <script>
-    /* MUSIK CONTROL DENGAN GAIN BOOSTER */
+    /* MUSIK CONTROL DENGAN BOOSTER X4 */
     let music = document.getElementById("bgMusic");
     music.volume = 1.0;
 
@@ -373,7 +374,7 @@
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
           source = audioCtx.createMediaElementSource(music);
           gainNode = audioCtx.createGain();
-          gainNode.gain.value = 2.5; 
+          gainNode.gain.value = 4.0; // PENGUAT SUARA 4X LIPAT
           source.connect(gainNode);
           gainNode.connect(audioCtx.destination);
         } catch(e) {
