@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Septira Munirah!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Sacramento&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #1a1c29, #282b40);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      padding: 20px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .screen.active { display: flex; }
+
+    /* STEP 1: PIN SCREEN */
+    .pin-box {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      padding: 30px 20px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .pin-title { font-size: 1.4rem; margin-bottom: 5px; font-weight: 600; }
+    .pin-subtitle { font-size: 0.85rem; color: #b3b3b3; margin-bottom: 25px; }
+    
+    .dots-container {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+    .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #ff6b81;
+      transition: all 0.2s;
+    }
+    .dot.filled { background: #ff6b81; box-shadow: 0 0 10px #ff6b81; }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+    .key-btn {
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 1.4rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      transition: all 0.15s;
+    }
+    .key-btn:active { background: #ff6b81; transform: scale(0.92); }
+
+    /* STEP 2: GAME BALON */
+    .game-header { margin-bottom: 15px; }
+    .game-header h2 { font-size: 1.5rem; color: #ff6b81; }
+    .score-board { font-size: 1.1rem; margin-top: 5px; background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; }
+    
+    #balloonCanvas {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+      touch-action: none;
+    }
+
+    /* STEP 3: KADO KEJUTAN */
+    .gift-container {
+      position: relative;
+      cursor: pointer;
+      margin: 40px 0;
+    }
+    .gift-box {
+      width: 140px;
+      height: 140px;
+      background: #ff4757;
+      position: relative;
+      border-radius: 12px;
+      box-shadow: 0 15px 30px rgba(255, 71, 87, 0.4);
+      animation: bounce 1.5s infinite;
+    }
+    .gift-bow {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 20px;
+      background: #ffa502;
+      border-radius: 10px 10px 0 0;
+    }
+    .gift-ribbon-v {
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 25px; height: 100%; background: #ffa502;
+    }
+    .gift-ribbon-h {
+      position: absolute;
+      top: 50%; left: 0; transform: translateY(-50%);
+      width: 100%; height: 25px; background: #ffa502;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(3deg); }
+    }
+
+    /* MAIN DISPLAY / GALERI */
+    .main-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 25px;
+      width: 100%;
+      margin-bottom: 20px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    }
+
+    .main-title {
+      font-family: 'Sacramento', cursive;
+      font-size: 2.8rem;
+      color: #ff6b81;
+      margin-bottom: 5px;
+      text-shadow: 0 0 10px rgba(255,107,129,0.3);
+    }
+
+    .main-sub {
+      font-size: 0.9rem;
+      color: #e0e0e0;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    /* CAROUSEL FOTO */
+    .carousel {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      border-radius: 18px;
+      overflow: hidden;
+      margin: 15px 0;
+      border: 3px solid #ff6b81;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    .carousel img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0; left: 0;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+    }
+    .carousel img.active { opacity: 1; }
+
+    .nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      border: none;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 5;
+    }
+    .nav-btn.prev { left: 10px; }
+    .nav-btn.next { right: 10px; }
+
+    .msg-box {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #f1f1f1;
+      margin-top: 15px;
+      background: rgba(0,0,0,0.2);
+      padding: 15px;
+      border-radius: 12px;
+    }
+
+    /* GRID FOTO */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      width: 100%;
+      margin-top: 15px;
+    }
+    .photo-grid img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* MUSIC BTN */
+    .music-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: rgba(255, 107, 129, 0.9);
+      border: none;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(255,107,129,0.4);
+    }
+
+    .shake { animation: shake 0.4s ease-in-out; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-10px); }
+      40%, 80% { transform: translateX(10px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AUDIO MUSIK HAPPY BIRTHDAY -->
+  <audio id="bgMusic" loop crossorigin="anonymous" preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c82d4317.mp3?filename=happy-birthday-15243.mp3" type="audio/mpeg">
+  </audio>
+
+  <button class="music-btn" onclick="toggleMusic()">🎵 Putar Musik</button>
+
+  <!-- STEP 1: MASUKKAN PIN -->
+  <div class="screen active" id="screenPin">
+    <div class="pin-box" id="pinBox">
+      <div class="pin-title">🔒 Kunci Rahasia</div>
+      <div class="pin-subtitle">Masukkan Tanggal Lahir (DDMMYYYY)</div>
+      
+      <div class="dots-container">
+        <div class="dot" id="dot0"></div>
+        <div class="dot" id="dot1"></div>
+        <div class="dot" id="dot2"></div>
+        <div class="dot" id="dot3"></div>
+      </div>
+
+      <div class="keypad">
+        <button class="key-btn" onclick="pressKey('1')">1</button>
+        <button class="key-btn" onclick="pressKey('2')">2</button>
+        <button class="key-btn" onclick="pressKey('3')">3</button>
+        <button class="key-btn" onclick="pressKey('4')">4</button>
+        <button class="key-btn" onclick="pressKey('5')">5</button>
+        <button class="key-btn" onclick="pressKey('6')">6</button>
+        <button class="key-btn" onclick="pressKey('7')">7</button>
+        <button class="key-btn" onclick="pressKey('8')">8</button>
+        <button class="key-btn" onclick="pressKey('9')">9</button>
+        <button class="key-btn" onclick="clearPin()">C</button>
+        <button class="key-btn" onclick="pressKey('0')">0</button>
+        <button class="key-btn" onclick="pressKey('⌫')">⌫</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: GAME BALON -->
+  <div class="screen" id="screenGame">
+    <div class="game-header">
+      <h2>🎈 Pecahkan 5 Balon!</h2>
+      <div class="score-board">Skor: <span id="score">0</span> / 5</div>
+    </div>
+    <canvas id="balloonCanvas" width="320" height="420"></canvas>
+  </div>
+
+  <!-- STEP 3: KADO KEJUTAN -->
+  <div class="screen" id="screenGift">
+    <h2 style="color: #ff6b81; margin-bottom: 10px;">🎁 Satu Langkah Lagi!</h2>
+    <p style="color: #ccc; font-size: 0.9rem;">Ketuk kado di bawah untuk membukanya</p>
+    
+    <div class="gift-container" onclick="openGift()">
+      <div class="gift-box">
+        <div class="gift-bow"></div>
+        <div class="gift-ribbon-v"></div>
+        <div class="gift-ribbon-h"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: GALERI FOTO & UCAPAN UTAMA -->
+  <div class="screen" id="screenMain">
+    <div class="main-card">
+      <h1 class="main-title">Happy Birthday!</h1>
+      <div class="main-sub">SEPTIRA MUNIRAH</div>
+
+      <div class="carousel">
+        <button class="nav-btn prev" onclick="moveSlide(-1)">❮</button>
+        <button class="nav-btn next" onclick="moveSlide(1)">❯</button>
+        
+        <img src="foto1.jpeg" class="active" alt="Septira 1">
+        <img src="foto2.jpeg" alt="Septira 2">
+        <img src="foto3.jpeg" alt="Septira 3">
+        <img src="foto4.jpeg" alt="Septira 4">
+        <img src="foto5.jpeg" alt="Septira 5">
+        <img src="foto6.jpeg" alt="Septira 6">
+        <img src="foto7.jpeg" alt="Septira 7">
+        <img src="foto8.jpeg" alt="Septira 8">
+        <img src="foto9.jpeg" alt="Septira 9">
+        <img src="foto10.jpeg" alt="Septira 10">
+        <img src="foto11.jpeg" alt="Septira 11">
+        <img src="foto12.jpeg" alt="Septira 12">
+        <img src="foto13.jpeg" alt="Septira 13">
+        <img src="foto14.jpeg" alt="Septira 14">
+      </div>
+
+      <div class="msg-box">
+        ✨ Selamat Ulang Tahun, Septira Munirah! 🎉<br>
+        29 September 2004<br><br>
+        Semoga panjang umur, sehat selalu, dilimpahkan kebahagiaan, dan segala cita-citanya tercapai! 💖
+      </div>
+
+      <div class="photo-grid">
+        <img src="foto1.jpeg" alt="Kenangan 1">
+        <img src="foto3.jpeg" alt="Kenangan 2">
+        <img src="foto5.jpeg" alt="Kenangan 3">
+        <img src="foto7.jpeg" alt="Kenangan 4">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* MUSIK CONTROL DENGAN GAIN BOOSTER (PENGUAT VOLUME) */
+    let music = document.getElementById("bgMusic");
+    music.volume = 1.0; // Set volume bawaan ke maksimum (100%)
+
+    let audioCtx, source, gainNode;
+
+    function boostAndPlayAudio() {
+      if (!audioCtx) {
+        try {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          source = audioCtx.createMediaElementSource(music);
+          gainNode = audioCtx.createGain();
+          
+          // Penguat Volume (2.5x lipat dari volume normal)
+          gainNode.gain.value = 2.5; 
+          
+          source.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+        } catch(e) {
+          console.log("AudioContext fallback:", e);
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      music.play().catch(e => console.log("Autoplay blocked:", e));
+      document.querySelector('.music-btn').innerText = "🔊 Hentikan Musik";
+    }
+
+    function toggleMusic() {
+      if (music.paused) {
+        boostAndPlayAudio();
+      } else {
+        music.pause();
+        document.querySelector('.music-btn').innerText = "🎵 Putar Musik";
+      }
+    }
+
+    /* NAVIGATION LOGIC */
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    /* STEP 1: PIN SYSTEM */
+    let currentPin = "";
+    const validPins = ["2909", "29092004", "290904"];
+
+    function pressKey(key) {
+      boostAndPlayAudio(); // Memutar audio dengan volume lebih besar
+      if(key === '⌫') {
+        currentPin = currentPin.slice(0, -1);
+      } else if(currentPin.length < 8) {
+        currentPin += key;
+      }
+      updateDots();
+
+      if(validPins.includes(currentPin)) {
+        setTimeout(() => {
+          showScreen('screenGame');
+          initGame();
+        }, 300);
+      } else if(currentPin.length >= 8) {
+        let box = document.getElementById('pinBox');
+        box.classList.add('shake');
+        setTimeout(() => { box.classList.remove('shake'); clearPin(); }, 400);
+      }
+    }
+
+    function clearPin() {
+      currentPin = "";
+      updateDots();
+    }
+
+    function updateDots() {
+      for(let i=0; i<4; i++) {
+        let dot = document.getElementById('dot'+i);
+        if(i < currentPin.length) dot.classList.add('filled');
+        else dot.classList.remove('filled');
+      }
+    }
+
+    /* STEP 2: BALLOON GAME */
+    let score = 0;
+    let balloons = [];
+    let canvas, ctx, animId;
+
+    function initGame() {
+      canvas = document.getElementById('balloonCanvas');
+      ctx = canvas.getContext('2d');
+      balloons = [];
+      score = 0;
+      document.getElementById('score').innerText = score;
+
+      for(let i=0; i<5; i++) {
+        balloons.push(createBalloon());
+      }
+
+      canvas.onclick = handleCanvasClick;
+      canvas.ontouchstart = handleCanvasClick;
+      animateGame();
+    }
+
+    function createBalloon() {
+      return {
+        x: Math.random() * (canvas.width - 40) + 20,
+        y: canvas.height + Math.random() * 100,
+        r: 22 + Math.random() * 8,
+        speed: 1.5 + Math.random() * 1.5,
+        color: ['#ff4757', '#ffa502', '#2ed573', '#1e90ff', '#9b59b6'][Math.floor(Math.random()*5)]
+      };
+    }
+
+    function animateGame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      balloons.forEach((b, idx) => {
+        b.y -= b.speed;
+        if(b.y < -30) b.y = canvas.height + 20;
+
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = b.color;
+        ctx.fill();
+        ctx.closePath();
+      });
+
+      if(score < 5) {
+        animId = requestAnimationFrame(animateGame);
+      }
+    }
+
+    function handleCanvasClick(e) {
+      let rect = canvas.getBoundingClientRect();
+      let x = (e.clientX || e.touches[0].clientX) - rect.left;
+      let y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+      balloons.forEach((b, idx) => {
+        let dist = Math.hypot(b.x - x, b.y - y);
+        if(dist < b.r + 10) {
+          balloons[idx] = createBalloon();
+          score++;
+          document.getElementById('score').innerText = score;
+          
+          if(score >= 5) {
+            cancelAnimationFrame(animId);
+            setTimeout(() => {
+              showScreen('screenGift');
+            }, 300);
+          }
+        }
+      });
+    }
+
+    /* STEP 3 & 4: KADO LANGSUNG KE UTAMA */
+    function openGift() {
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+
+      setTimeout(() => {
+        showScreen('screenMain');
+        startCarousel();
+      }, 500);
+    }
+
+    /* SLIDER FOTO */
+    let slideIdx = 0;
+    const slides = document.querySelectorAll('.carousel img');
+
+    function showSlide(n) {
+      slides.forEach(s => s.classList.remove('active'));
+      slideIdx = (n + slides.length) % slides.length;
+      slides[slideIdx].classList.add('active');
+    }
+
+    function moveSlide(n) {
+      showSlide(slideIdx + n);
+    }
+
+    function startCarousel() {
+      setInterval(() => {
+        moveSlide(1);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
